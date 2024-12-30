@@ -53,10 +53,9 @@ function renderQuestions() {
       // Restore selected choice from sessionStorage
       if (savedProgress[index] === choice) {
         choiceElement.checked = true;
+		choiceElement.setAttribute("checked", "true"); // Explicitly set checked attribute
       }
-      //   console.log(choice);
-      //   console.log(index);
-      //   console.log(savedProgress[0]);
+     
 
       // Save choice to sessionStorage on selection
       choiceElement.addEventListener("change", () => {
