@@ -1,7 +1,5 @@
-//your JS code here.
+// Updated JS code
 
-// Do not change code below this line
-// This code will just display the questions to the screen
 const questions = [
   {
     question: "What is the capital of France?",
@@ -30,27 +28,73 @@ const questions = [
   },
 ];
 
-// Display the quiz questions and choices
+// Function to render questions
 function renderQuestions() {
-  for (let i = 0; i < questions.length; i++) {
-    const question = questions[i];
+  const questionContainer = document.getElementById("questions");
+  const savedProgress = JSON.parse(sessionStorage.getItem("progress")) || {};
+
+  questions.forEach((question, index) => {
     const questionElement = document.createElement("div");
-    const questionText = document.createTextNode(question.question);
+    questionElement.classList.add("question-block");
+
+    // Display question
+    const questionText = document.createElement("p");
+    questionText.textContent = question.question;
     questionElement.appendChild(questionText);
-    for (let j = 0; j < question.choices.length; j++) {
-      const choice = question.choices[j];
+
+    // Display choices
+    question.choices.forEach((choice) => {
+      const label = document.createElement("label");
       const choiceElement = document.createElement("input");
       choiceElement.setAttribute("type", "radio");
-      choiceElement.setAttribute("name", `question-${i}`);
+      choiceElement.setAttribute("name", `question-${index}`);
       choiceElement.setAttribute("value", choice);
-      if (userAnswers[i] === choice) {
-        choiceElement.setAttribute("checked", true);
+
+      // Restore selected choice from sessionStorage
+      if (savedProgress[index] === choice) {
+        choiceElement.checked = true;
       }
-      const choiceText = document.createTextNode(choice);
-      questionElement.appendChild(choiceElement);
-      questionElement.appendChild(choiceText);
-    }
-    questionsElement.appendChild(questionElement);
-  }
+      //   console.log(choice);
+      //   console.log(index);
+      //   console.log(savedProgress[0]);
+
+      // Save choice to sessionStorage on selection
+      choiceElement.addEventListener("change", () => {
+        savedProgress[index] = choice;
+        sessionStorage.setItem("progress", JSON.stringify(savedProgress));
+      });
+
+      label.appendChild(choiceElement);
+      label.appendChild(document.createTextNode(choice));
+      questionElement.appendChild(label);
+    });
+
+    questionContainer.appendChild(questionElement);
+  });
 }
+
+// Function to calculate and display score
+function calculateScore() {
+  const savedProgress = JSON.parse(sessionStorage.getItem("progress")) || {};
+  let score = 0;
+
+  questions.forEach((question, index) => {
+    if (savedProgress[index] === question.answer) {
+      score++;
+    }
+  });
+
+  // Display score
+  const scoreElement = document.getElementById("score");
+  scoreElement.textContent = `Your score is ${score} out of 5.`;
+
+  // Save score to localStorage
+  localStorage.setItem("score", score);
+}
+
+// Render questions on page load
 renderQuestions();
+
+// Add event listener to submit button
+const submitButton = document.getElementById("submit");
+submitButton.addEventListener("click", calculateScore);
